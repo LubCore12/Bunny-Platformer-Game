@@ -1,11 +1,12 @@
 from settings import *
 from sprites import *
 
-class Player(Sprite):
-    def __init__(self, x, y, groups, collisions):
-        self.image = pygame.image.load(join('images', 'player', '0.png'))
+class Player(AnimatedSprite):
+    def __init__(self, frames, x, y, groups, collisions):
+        self.frames = frames
+        self.flip = False
 
-        super().__init__(self.image, x, y, groups)
+        super().__init__(self.frames, x, y, groups)
 
         self.direction = pygame.Vector2()
         self.gravity = 15
@@ -19,7 +20,7 @@ class Player(Sprite):
         self.direction.x = int(self.key[pygame.K_d]) - int(self.key[pygame.K_a])
 
         if self.key[pygame.K_SPACE] and self.on_floor:
-            self.direction.y = -11
+            self.direction.y = -9
 
     def move(self, delta_time):
         self.rect.x += self.direction.x * self.speed * delta_time
@@ -50,7 +51,21 @@ class Player(Sprite):
         level_rects = [sprite.rect for sprite in self.collisions]
         self.on_floor = True if bottom_rect.collidelist(level_rects) >= 0 else False
 
+    def animate(self, delta_time):
+        if self.direction.x:
+            self.frame_index += self.animation_speed * delta_time
+            self.flip = self.direction.x < 0
+        else:
+            self.frame_index = 0.99
+
+        if not self.on_floor:
+            self.frame_index = 1.99
+
+        self.image = self.frames[int(self.frame_index) % len(self.frames)]
+        self.image = pygame.transform.flip(self.image, self.flip, False)
+
     def update(self, delta_time):
         self.check_floor()
         self.input()
         self.move(delta_time)
+        self.animate(delta_time)

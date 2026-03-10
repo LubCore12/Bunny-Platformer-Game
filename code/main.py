@@ -2,6 +2,8 @@ from settings import *
 from player import *
 from sprites import *
 from groups import *
+from support import *
+from enemies import *
 
 class Game:
     def __init__(self):
@@ -13,11 +15,22 @@ class Game:
 
         # groups
         self.all_sprites = AllSprites()
+        self.enemy_sprites = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
 
         self.game_map = load_pygame(join('data', 'maps', 'world.tmx'))
 
+        self.load_assets()
         self.setup()
+
+    def load_assets(self):
+        self.player_frames = import_folder('images', 'player')
+        self.bee_frames = import_folder('images', 'enemies', 'bee')
+        self.worm_frames = import_folder('images', 'enemies', 'worm')
+        self.bullet_surf = import_image('images', 'gun', 'bullet')
+        self.fire_surf = import_image('images', 'gun', 'fire')
+
+        self.audio = audio_importer('audio')
 
     def setup(self):
         for x, y, image in self.game_map.get_layer_by_name("Main").tiles():
@@ -28,7 +41,12 @@ class Game:
 
         for entity in self.game_map.get_layer_by_name("Entities"):
             if entity.name == "Player":
-                self.player = Player(entity.x, entity.y, self.all_sprites, self.collision_sprites)
+                self.player = Player(self.player_frames, entity.x, entity.y, self.all_sprites, self.collision_sprites)
+            if entity.name == "Worm":
+                Worm(self.worm_frames, entity.x, entity.y, (self.all_sprites, self.enemy_sprites))
+
+        Bee(self.bee_frames, 500, 600, self.all_sprites)
+
 
     def run(self):
         while self.running:
