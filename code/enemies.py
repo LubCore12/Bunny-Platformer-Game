@@ -1,5 +1,5 @@
 from settings import *
-from sprites import *
+
 
 class Worm(AnimatedSprite):
     def __init__(self, frames, x, y, groups):
