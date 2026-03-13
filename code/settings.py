@@ -3,6 +3,8 @@ from pytmx.util_pygame import load_pygame
 from importlib import import_module
 from os import walk
 from os.path import join
+from random import randint
+from math import sin
 
 # Game
 
@@ -14,10 +16,10 @@ BG_COLOR = "#fcdfcd"
 
 # Player
 
-GRAVITY = 15
+GRAVITY = 25
 SPEED = 500
 BULLET_SPEED = 850
-JUMP_VELOCITY = -9
+JUMP_VELOCITY = -15
 SHOOT_COOLDOWN_MS = 350
 
 # Game Classes and Functions
